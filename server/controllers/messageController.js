@@ -1,44 +1,34 @@
-const { Message, User } = require("../models/index");
+const { Message } = require("../models");
 
-const messageController = {
+module.exports = {
   // Create a new message
-  createMessage: async (req, res) => {
-    try {
-      const { sender, recipient, body } = req.body;
-      const message = await Message.create({ sender, recipient, body });
-      res.status(200).json(message);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to create message." });
-    }
-  },
-
-  // Fetch all messages
-  getAllMessages: async (req, res) => {
-    try {
-      const messages = await Message.find()
-        .populate("sender")
-        .populate("recipient")
-        .sort({ timestamp: -1 });
-      res.status(200).json(messages);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to get messages." });
-    }
-  },
-
-  // Get messages by user
-  getMessagesByUser: async (req, res) => {
-    try {
-      const messages = await Message.find({
-        $or: [{ sender: req.user._id }, { recipient: req.user._id }],
+  createMessage(req, res) {
+    Message.create(req.body)
+      .then((messageData) => {
+        return User.findOneAndUpdate(
+          { _id: req.body.userId },
+          { $push: { messages: messageData._id } },
+          { new: true }
+        );
       })
-        .populate("sender")
-        .populate("recipient")
-        .sort({ timestamp: -1 });
-      res.status(200).json(messages);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to get messages." });
-    }
+      .then((messageData) => {
+        res.json(messageData);
+      })
+      .catch((error) => {
+        res.status(500).json(error);
+      });
+  },
+
+  // Get a single message by either their id or their username
+  getSingleMessage(req, res) {
+    Message.findOne({ _id: req.params.messageId })
+      .select("-__v")
+      .then((messageData) => {
+        if (!messageData) {
+          return res.status(404).json({ message: "No thought with this ID!" });
+        }
+        res.json(messageData);
+      })
+      .catch((error) => res.status(500).json(error));
   },
 };
-
-module.exports = messageController;
