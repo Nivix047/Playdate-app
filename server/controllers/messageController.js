@@ -1,34 +1,41 @@
-const { Message } = require("../models");
+const { Message, User } = require("../models");
 
 module.exports = {
   // Create a new message
-  createMessage(req, res) {
-    Message.create(req.body)
-      .then((messageData) => {
-        return User.findOneAndUpdate(
-          { _id: req.body.userId },
-          { $push: { messages: messageData._id } },
-          { new: true }
-        );
-      })
-      .then((messageData) => {
-        res.json(messageData);
-      })
-      .catch((error) => {
-        res.status(500).json(error);
-      });
+  createMessage: async (req, res) => {
+    const { sender, recipient, body } = req.body;
+    try {
+      const message = await Message.create({ sender, recipient, body });
+      res.json(message);
+    } catch (err) {
+      res.status(500).json(err);
+    }
   },
 
-  // Get a single message by either their id or their username
-  getSingleMessage(req, res) {
-    Message.findOne({ _id: req.params.messageId })
-      .select("-__v")
-      .then((messageData) => {
-        if (!messageData) {
-          return res.status(404).json({ message: "No thought with this ID!" });
-        }
-        res.json(messageData);
-      })
-      .catch((error) => res.status(500).json(error));
+  // Get all messages for a user
+  getUserMessages: async (req, res) => {
+    try {
+      const messages = await Message.find({
+        $or: [{ sender: req.params.userId }, { recipient: req.params.userId }],
+      });
+      res.json(messages);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+
+  // Get conversation between two users
+  getConversation: async (req, res) => {
+    try {
+      const messages = await Message.find({
+        $or: [
+          { sender: req.params.userId, recipient: req.params.otherUserId },
+          { sender: req.params.otherUserId, recipient: req.params.userId },
+        ],
+      });
+      res.json(messages);
+    } catch (err) {
+      res.status(500).json(err);
+    }
   },
 };
