@@ -25,6 +25,12 @@ const UserSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    group: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Group",
+      },
+    ],
   },
   { toJSON: { virtuals: true }, id: false }
 );

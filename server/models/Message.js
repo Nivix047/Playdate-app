@@ -14,6 +14,10 @@ const MessageSchema = new mongoose.Schema({
     required: true,
     timestamp: { type: Date, default: Date.now },
   },
+  group: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Group",
+  },
 });
 
 module.exports = mongoose.model("Message", MessageSchema);
