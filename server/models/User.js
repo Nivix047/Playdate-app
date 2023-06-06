@@ -1,17 +1,31 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
-const UserSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    match: [/.+@.+\..+/, "Must use a valid email address"],
+const UserSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      match: [/.+@.+\..+/, "Must use a valid email address"],
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    friends: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
-  password: {
-    type: String,
-    required: true,
-  },
+  { toJSON: { virtuals: true }, id: false }
+);
+
+// Virtual for friend count
+UserSchema.virtual("friendCount").get(function () {
+  return this.friends.length;
 });
 
 UserSchema.pre("save", async function (next) {
