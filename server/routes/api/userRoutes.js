@@ -11,6 +11,7 @@ const {
   isLoggedIn,
 } = require("../../controllers/userController");
 
+// Import our custom middleware
 const { authMiddleware } = require("../../utils/auth");
 
 // GET and POST at /api/users
