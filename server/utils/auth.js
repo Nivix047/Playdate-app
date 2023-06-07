@@ -4,7 +4,7 @@ const secret = "mysecretsshhhhh";
 const expiration = "2h";
 
 module.exports = {
-  authMiddleware: function ({ req }) {
+  authMiddleware: function (req, res, next) {
     // allows token to be sent via req.body, req.query, or headers
     let token = req.body.token || req.query.token || req.headers.authorization;
 
@@ -14,18 +14,19 @@ module.exports = {
     }
 
     if (!token) {
-      return req;
+      return next(); // Go to the next middleware/route handler
     }
 
     try {
       const { data } = jwt.verify(token, secret, { maxAge: expiration });
       req.user = data;
+      next();
     } catch {
       console.log("Invalid token");
+      next();
     }
-
-    return req;
   },
+
   signToken: function (user) {
     const payload = { username: user.username, _id: user._id };
 

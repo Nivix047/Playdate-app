@@ -40,6 +40,10 @@ UserSchema.virtual("friendCount").get(function () {
   return this.friends.length;
 });
 
+UserSchema.methods.isCorrectPassword = async function (password) {
+  return bcrypt.compare(password, this.password);
+};
+
 UserSchema.pre("save", async function (next) {
   if (this.isNew || this.isModified("password")) {
     const saltRounds = 10;
