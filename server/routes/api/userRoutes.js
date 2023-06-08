@@ -26,12 +26,15 @@ router
   .get(authMiddleware, isLoggedIn, getUserFriends);
 
 // add a friend & remove a friend
-router.route("/:userId/friends/:friendId").post(addFriend).delete(removeFriend);
+router
+  .route("/:userId/friends/:friendId")
+  .post(authMiddleware, isLoggedIn, addFriend)
+  .delete(authMiddleware, isLoggedIn, removeFriend);
 
 // send a friend request & accept a friend request
 router
   .route("/:userId/friendRequests/:friendId")
-  .post(sendFriendRequest)
-  .put(acceptFriendRequest);
+  .post(authMiddleware, isLoggedIn, sendFriendRequest)
+  .put(authMiddleware, isLoggedIn, acceptFriendRequest);
 
 module.exports = router;

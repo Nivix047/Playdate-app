@@ -117,7 +117,25 @@ module.exports = {
   // Accept a friend request
   async acceptFriendRequest(req, res) {
     try {
-      const userData = await User.findByIdAndUpdate(
+      // Make sure the recipient of the request is the logged-in user
+      if (req.params.userId !== String(req.user._id)) {
+        return res
+          .status(403)
+          .json({
+            message:
+              "You can't accept a friend request on behalf of another user.",
+          });
+      }
+      // Find the user who received the friend request
+      const userData = await User.findById(req.params.userId);
+      // Check if the friend request exists
+      if (!userData.friendRequests.includes(req.params.friendId)) {
+        return res
+          .status(400)
+          .json({ message: "This friend request doesn't exist." });
+      }
+      // Update the recipient user
+      await User.findByIdAndUpdate(
         req.params.userId,
         {
           $pull: { friendRequests: req.params.friendId },
@@ -125,6 +143,7 @@ module.exports = {
         },
         { new: true }
       );
+      // Update the requester user
       const friendData = await User.findByIdAndUpdate(
         req.params.friendId,
         {
