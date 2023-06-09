@@ -73,18 +73,19 @@ module.exports = {
   },
 
   // Add a friend to a user's friend list
-  async addFriend(req, res) {
-    try {
-      const userData = await User.findOneAndUpdate(
-        { _id: req.params.userId },
-        { $addToSet: { friends: req.params.friendId } },
-        { new: true }
-      ).populate("friends");
-      res.json(userData);
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  },
+  // Can be used as a follow feature
+  // async addFriend(req, res) {
+  //   try {
+  //     const userData = await User.findOneAndUpdate(
+  //       { _id: req.params.userId },
+  //       { $addToSet: { friends: req.params.friendId } },
+  //       { new: true }
+  //     ).populate("friends");
+  //     res.json(userData);
+  //   } catch (err) {
+  //     res.status(500).json(err);
+  //   }
+  // },
 
   // Remove a friend from a user's friend list
   async removeFriend(req, res) {
@@ -119,12 +120,10 @@ module.exports = {
     try {
       // Make sure the recipient of the request is the logged-in user
       if (req.params.userId !== String(req.user._id)) {
-        return res
-          .status(403)
-          .json({
-            message:
-              "You can't accept a friend request on behalf of another user.",
-          });
+        return res.status(403).json({
+          message:
+            "You can't accept a friend request on behalf of another user.",
+        });
       }
       // Find the user who received the friend request
       const userData = await User.findById(req.params.userId);

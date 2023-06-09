@@ -28,7 +28,8 @@ router
 // add a friend & remove a friend
 router
   .route("/:userId/friends/:friendId")
-  .post(authMiddleware, isLoggedIn, addFriend)
+  //  can be used to add a friend without authentication like a follow each other feature
+  // .post(authMiddleware, isLoggedIn, addFriend)
   .delete(authMiddleware, isLoggedIn, removeFriend);
 
 // send a friend request & accept a friend request
