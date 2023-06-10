@@ -90,6 +90,12 @@ module.exports = {
   // Remove a friend from a user's friend list
   async removeFriend(req, res) {
     try {
+      // Make sure the remover is the logged-in user
+      if (req.params.userId !== String(req.user._id)) {
+        return res.status(403).json({
+          message: "You can't remove a friend from another user's friend list.",
+        });
+      }
       const userData = await User.findOneAndUpdate(
         { _id: req.params.userId },
         { $pull: { friends: req.params.friendId } },
@@ -105,8 +111,8 @@ module.exports = {
   async sendFriendRequest(req, res) {
     try {
       const userData = await User.findOneAndUpdate(
-        { _id: req.params.userId },
-        { $addToSet: { friendRequests: req.params.friendId } },
+        { _id: req.params.friendId }, // update the recipient's friendRequests, not the sender's
+        { $addToSet: { friendRequests: req.params.userId } }, // add the sender's userId
         { new: true }
       );
       res.json(userData);

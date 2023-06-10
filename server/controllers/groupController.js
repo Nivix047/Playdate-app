@@ -145,29 +145,29 @@ module.exports = {
   },
 
   // Add a user to a group
-  async addUserToGroup(req, res) {
-    try {
-      // Find the group and add the user to the group's user array
-      const groupData = await Group.findByIdAndUpdate(
-        req.params.groupId,
-        { $addToSet: { users: req.params.userId } },
-        { new: true }
-      ).populate("users");
+  // async addUserToGroup(req, res) {
+  //   try {
+  //     // Find the group and add the user to the group's user array
+  //     const groupData = await Group.findByIdAndUpdate(
+  //       req.params.groupId,
+  //       { $addToSet: { users: req.params.userId } },
+  //       { new: true }
+  //     ).populate("users");
 
-      // Find the user and add the group to the user's group array
-      const userData = await User.findByIdAndUpdate(
-        req.params.userId,
-        { $addToSet: { groups: req.params.groupId } },
-        { new: true }
-      );
+  //     // Find the user and add the group to the user's group array
+  //     const userData = await User.findByIdAndUpdate(
+  //       req.params.userId,
+  //       { $addToSet: { groups: req.params.groupId } },
+  //       { new: true }
+  //     );
 
-      // Return the updated group data
-      res.json(groupData);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json(err);
-    }
-  },
+  //     // Return the updated group data
+  //     res.json(groupData);
+  //   } catch (err) {
+  //     console.error(err);
+  //     res.status(500).json(err);
+  //   }
+  // },
 
   // Remove a user from a group
   async removeUserFromGroup(req, res) {

@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const {
   createGroup,
-  addUserToGroup,
+  // addUserToGroup,
   getGroupMessages,
   createGroupMessage,
   removeUserFromGroup,
@@ -26,8 +26,8 @@ router
 // Add a user to a group & remove a user from a group
 router
   .route("/:groupId/users/:userId")
-  .post(addUserToGroup)
-  .delete(removeUserFromGroup);
+  // .post(addUserToGroup)
+  .delete(authMiddleware, isLoggedIn, removeUserFromGroup);
 
 // Get all messages in a group & create a message in a group
 router
