@@ -25,7 +25,13 @@ const UserSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    group: [
+    groups: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Group",
+      },
+    ],
+    groupInvites: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Group",

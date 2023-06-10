@@ -17,6 +17,12 @@ const GroupSchema = new mongoose.Schema({
       ref: "Message",
     },
   ],
+  invites: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
 });
 
 module.exports = mongoose.model("Group", GroupSchema);
