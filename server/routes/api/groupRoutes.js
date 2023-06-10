@@ -32,7 +32,7 @@ router
 // Get all messages in a group & create a message in a group
 router
   .route("/:groupId/messages")
-  .get(getGroupMessages)
-  .post(createGroupMessage);
+  .get(authMiddleware, isLoggedIn, getGroupMessages)
+  .post(authMiddleware, isLoggedIn, createGroupMessage);
 
 module.exports = router;
