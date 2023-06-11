@@ -30,7 +30,16 @@ module.exports = {
       res.json(userData);
     } catch (err) {
       console.log(err);
-      res.status(500).json(err);
+      if (err.code === 11000) {
+        // This is a duplicate key error, meaning the email already exists in the DB
+        res
+          .status(409)
+          .json({
+            message: "Email already registered. Please use a different email.",
+          });
+      } else {
+        res.status(500).json(err);
+      }
     }
   },
 
@@ -110,6 +119,12 @@ module.exports = {
   // Send a friend request
   async sendFriendRequest(req, res) {
     try {
+      // Make sure the sender is the logged-in user
+      if (req.params.userId !== String(req.user._id)) {
+        return res.status(403).json({
+          message: "You can't send a friend request on behalf of another user.",
+        });
+      }
       const userData = await User.findOneAndUpdate(
         { _id: req.params.friendId }, // update the recipient's friendRequests, not the sender's
         { $addToSet: { friendRequests: req.params.userId } }, // add the sender's userId
