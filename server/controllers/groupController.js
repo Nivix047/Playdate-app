@@ -52,6 +52,9 @@ module.exports = {
       const group = await Group.findById(req.params.groupId);
       const user = await User.findById(req.params.userId);
 
+      console.log("group:", group);
+      console.log("user:", user);
+
       // Check if the user is already a member of the group
       if (group.users.includes(req.params.userId)) {
         return res

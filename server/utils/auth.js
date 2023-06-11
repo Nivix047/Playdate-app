@@ -8,14 +8,18 @@ module.exports = {
     // allows token to be sent via req.body, req.query, or headers
     let token = req.body.token || req.query.token || req.headers.authorization;
 
+    console.log("token before splitting:", token);
+
     // ["Bearer", "<tokenvalue>"]
     if (req.headers.authorization) {
       token = token.split(" ").pop().trim();
       console.log(`Extracted Token: ${token}`); // Log the extracted token
     }
 
+    console.log("token after splitting:", token);
+
     if (!token) {
-      return res.status(401).json({ message: 'No token provided' }); // Respond with an error if no token
+      return res.status(401).json({ message: "No token provided" }); // Respond with an error if no token
     }
 
     try {
@@ -24,7 +28,7 @@ module.exports = {
       next();
     } catch {
       console.log("Invalid token");
-      res.status(401).json({ message: 'Invalid token' }); // Respond with an error if token is invalid
+      res.status(401).json({ message: "Invalid token" }); // Respond with an error if token is invalid
     }
   },
 
