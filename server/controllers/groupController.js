@@ -50,6 +50,13 @@ module.exports = {
   async inviteUserToGroup(req, res) {
     try {
       const group = await Group.findById(req.params.groupId);
+      if (!group.users.includes(req.user._id.toString())) {
+        return res
+          .status(403)
+          .json({
+            message: "You must be a member of the group to invite others",
+          });
+      }
       const user = await User.findById(req.params.userId);
 
       console.log("group:", group);
@@ -94,6 +101,10 @@ module.exports = {
   // Accept a group invite
   async acceptGroupInvite(req, res) {
     try {
+      // If the user trying to accept an invite is not the logged-in user, deny
+      if (req.user._id !== req.params.userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
       const user = await User.findById(req.params.userId).select(
         "groupInvites groups"
       );
@@ -175,6 +186,10 @@ module.exports = {
   // Remove a user from a group
   async removeUserFromGroup(req, res) {
     try {
+      // If the user trying to remove themselves from a group is not the logged-in user, deny
+      if (req.user._id !== req.params.userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
       // Find the group and remove the user from the group's user array
       const group = await Group.findById(req.params.groupId);
       group.users.pull(req.params.userId);
@@ -196,6 +211,10 @@ module.exports = {
   // Create a new message in a group
   createGroupMessage: async (req, res) => {
     try {
+      // If the user trying to create a message is not the logged-in user, deny
+      if (req.user._id !== req.body.sender) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
       const group = await Group.findById(req.params.groupId);
       if (!group) {
         return res.status(404).json({ error: "Group not found" });
